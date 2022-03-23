@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Bootstrap Example</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script
+src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    </head>
+    <body>
+        <div class="container">
+<h2>Student Details</h2>
+<form id="StuForm" method="post">
+<div class="form-group">
+<span><label for="stuId">Student ID:</label> <label id="stuIdMsg">
+</label></span>
+<input type="text" class="form-control" name="stuId" id="stuId"
+placeholder="Enter Student ID" required>
+</div>
+<div class="form-group">
+<label for="stuName">Student Name:</label>
+<input type="text" class="form-control" id="stuName"
+placeholder="Enter Student Name" name="stuName">
+</div>
+<div class="form-group">
+<label for="stuEmail">Email:</label>
+<input type="email" class="form-control" id="stuEmail"
+placeholder="Enter Registered Student Email" name="stuEmail">
+</div>
+<div class="form-group">
+<label for="stuNum">Contact Number:</label>
+<input type="tel" class="form-control" id="stuNum"
+       placeholder="Enter Contact Number" name="stuNum" maxlength="10">
+</div>
+
+<div class="form-group">
+<span><label for="stupass">Password:</label> <label id="stupassMsg">
+</label></span>
+<input type="text" class="form-control" name="stupass" id="stupass"
+placeholder="Ente Password" required>
+</div>
+ <div class="form-group">
+<span><label for="studob">Date of Birth:</label> <label id="studobMsg">
+</label></span>
+<input type="date" class="form-control" name="studob" id="studob"
+placeholder="Enter Date of Birth" required>
+ </div>
+   <div class="form-group">
+<span><label for="stuclg">College Name:</label> <label id="stuclgMsg">
+</label></span>
+<input type="text" class="form-control" name="stuclg" id="stuclg"
+placeholder="Enter College Name" required>
+ </div>
+    <div class="form-group">
+<span><label for="stubranch">Branch Name:</label> <label id="stubranchMsg">
+</label></span>
+        <select name="branch" id="branch" class="form-control">
+            <option value="Ele">Electrical</option>
+                    <option value="mech">mechanical</option>
+             <option value="Computer Science">Computer Science</option>
+                      <option value="che">Chemical </option>
+              <option value="ECE">ECE</option>
+        </select>
+ </div>
+ <input type="Submit" class="btn btn-primary" id="stuSave" value="Submit"
+onclick="saveStudent();">
+ <input type="reset" class="btn btn-primary" id="Stusubmit" value="reset" onclick="resetStudent()" >
+
+</form>
+</div>
+ <script>
+     function validateAndGetFormData() {
+var stuIdVar = $("#stuId").val();
+if (stuIdVar === "") {
+alert("Student ID Required Value");
+$("#stuId").focus();
+return "";
+}
+var stuNameVar = $("#stuName").val();
+if (stuNameVar === "") {
+alert("Student Name is Required Value");
+$("#stuName").focus();
+return "";
+}
+var stuEmailVar = $("#stuEmail").val();
+if (stuEmailVar === "") {
+alert("Student Email is Required Value");
+$("#stuEmail").focus();
+return "";
+}
+var stuNumVar = $("#stuNum").val();
+if (stuNumVar === "") {
+alert("Student Number is Required Value");
+$("#stuNum").focus();
+return "";
+}
+var stupassVar = $("#stupass").val();
+if (stupassVar === "") {
+alert("Password is Required Value");
+$("#stupass").focus();
+return "";
+}
+
+var studobVar = $("#studob").val();
+if (studobVar === "") {
+alert("Student DOB is Required Value");
+$("#studob").focus();
+return "";
+}
+var stuclgVar = $("#stuclg").val();
+if (stuclgVar === "") {
+alert("College Nmae is Required Value");
+$("#stuclg").focus();
+return "";
+}
+var stubranchVar = $("#stubranch").val();
+if (stubranchVar === "") {
+alert("Branch is Required Value");
+$("#stubranch").focus();
+return "";
+}
+
+var jsonStrObj = {
+stuId: stuIdVar,
+stuName: stuNameVar,
+stuEmail: stuEmailVar,
+stuNum:stuNumVar,
+stupass:stupassVar,
+studob:studobVar,
+stuclg:stuclgVar,
+stubranch:stubranchVar
+
+
+};
+return JSON.stringify(jsonStrObj);
+}
+function createPUTRequest(connToken, jsonObj, dbName,relName) {
+var putRequest = "{\n"
++ "\"token\" : \""
++ connToken
++ "\","
++ "\"dbName\": \""
++ dbName
++ "\",\n" + "\"cmd\" : \"PUT\",\n"
++ "\"rel\" : \""
++ relName + "\","
++ "\"jsonStr\": \n"
++ jsonObj
++ "\n"
++ "}";
+return putRequest;
+}
+function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+var url = dbBaseUrl + apiEndPointUrl;
+var jsonObj;
+$.post(url, reqString, function (result) {
+jsonObj = JSON.parse(result);
+}).fail(function (result) {
+var dataJsonObj = result.responseText;
+jsonObj = JSON.parse(dataJsonObj);
+});
+return jsonObj;
+}
+function resetForm() {
+$("#stuId").val("");
+$("#stuName").val("");
+$("#stuEmail").val("");
+$("#stuNum").val("");
+$("#stupass").val("");
+$("#studob").val("");
+$("#stuclg").val("");
+$("#stubranch").val("");
+}
+function saveStudent() {
+var jsonStr = validateAndGetFormData();
+if (jsonStr === "") {
+return;
+}
+var putReqStr = createPUTRequest("90938763|-31948831528974070|90945916",jsonStr, "Student_Details", "stu.rel");
+alert(putReqStr);
+jQuery.ajaxSetup({async: false});
+var resultObj = executeCommand(putReqStr,"http://api.login2explore.com:5577", "/api/iml");
+alert(JSON.stringify(resultObj));
+jQuery.ajaxSetup({async: true});
+resetForm();
+}
+function resetStudent()
+{
+     
+$("#stuId").val("");
+$("#stuName").val("");
+$("#stuEmail").val("");
+$("#stuNum").val("");
+$("#stupass").val("");
+$("#studob").val("");
+$("#stuclg").val("");
+$("#stubranch").val("");
+}
+
+
+ </script>
+    </body>
+</html>
